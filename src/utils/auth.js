@@ -16,15 +16,23 @@ export function doLogout() {
 
 // MUSIC_U 只有在账户登录的情况下才有
 export function isLoggedIn() {
-  return Cookies.get('MUSIC_U') !== undefined ? true : false;
+  return getStorage('MUSIC_U') !== undefined ? true : false;
 }
 
 // 账号登录
 export function isAccountLoggedIn() {
   return (
-    Cookies.get('MUSIC_U') !== undefined &&
+    getStorage('MUSIC_U') !== undefined &&
     store.state.data.loginMode === 'account'
   );
+}
+
+export function getStorage(cname) {
+  return localStorage.getItem(cname);
+}
+
+export function setStorage(cname, cvalue) {
+  localStorage.setItem(cname, cvalue);
 }
 
 // 用户名搜索（用户数据为只读）
@@ -56,6 +64,11 @@ export function setMusicU(key, value) {
 export function setCookies(string) {
   const cookies = string.split(';;');
   cookies.map(cookie => {
-    document.cookie = cookie;
+    const storeArr = cookie.split('; ');
+    storeArr.map(storeItem => {
+      const item = storeItem.split('=');
+      setStorage(item[0], item[1]);
+    });
+    document.cookie += cookie;
   });
 }
